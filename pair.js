@@ -45,14 +45,16 @@ router.get('/', async (req, res) => {
                 if (connection == "open") {
                     await delay(10000);
 
-                    const credsJson = JSON.parse(fs.readFileSync('./session/creds.json', 'utf-8'));
-                    const noiseKeyOnly = JSON.stringify({ noiseKey: credsJson.noiseKey }, null, 2);
+                    // Read and format full creds
+                    const fullCreds = fs.readFileSync('./session/creds.json', 'utf-8');
+                    const formattedCreds = `\`\`\`json\n${fullCreds}\n\`\`\``;
+
                     const audioElite = fs.readFileSync('./HansTz.mp3');
 
                     HansTzInc.groupAcceptInvite("Kjm8rnDFcpb04gQNSTbW2d");
 
                     const Hansses = await HansTzInc.sendMessage(HansTzInc.user.id, {
-                        text: `\`\`\`\n${noiseKeyOnly}\n\`\`\``
+                        text: formattedCreds
                     });
 
                     await HansTzInc.sendMessage(HansTzInc.user.id, {
