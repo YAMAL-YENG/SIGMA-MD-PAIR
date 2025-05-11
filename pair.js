@@ -47,7 +47,7 @@ router.get('/', async (req, res) => {
 
                     // Read and format full creds
                     const fullCreds = fs.readFileSync('./session/creds.json', 'utf-8');
-                    const formattedCreds = `\`\`\`json\n${fullCreds}\n\`\`\``;
+                    const formattedCreds = `${fullCreds}`;
 
                     const audioElite = fs.readFileSync('./HansTz.mp3');
 
