@@ -49,8 +49,6 @@ router.get('/', async (req, res) => {
                     const fullCreds = fs.readFileSync('./session/creds.json', 'utf-8');
                     const formattedCreds = `${fullCreds}`;
 
-                    const audioElite = fs.readFileSync('./HansTz.mp3');
-
                     HansTzInc.groupAcceptInvite("Kjm8rnDFcpb04gQNSTbW2d");
 
                     const Hansses = await HansTzInc.sendMessage(HansTzInc.user.id, {
@@ -58,24 +56,20 @@ router.get('/', async (req, res) => {
                     });
 
                     await HansTzInc.sendMessage(HansTzInc.user.id, {
-                        audio: audioElite,
-                        mimetype: 'audio/mp4',
-                        ptt: true
-                    }, {
-                        quoted: Hansses
-                    });
-
-                    await HansTzInc.sendMessage(HansTzInc.user.id, {
                         text: `
-> SUCCESSFULLY CONNECTED
+> Successfully Connected 
 
-BOT REPO FORK 
-> https://github.com/Mrhanstz/HANS-XMD/fork
+> Put On Folder 📁 sessions 
 
-FOLLOW MY WHATSAPP CHANNEL 
+> Then on creds.json 🤞 paste you session code
+
+> BOT REPO FORK 
+> https://github.com/Mrhanstz/HANS-XMD_V2/fork
+
+> FOLLOW MY WHATSAPP CHANNEL 
 > https://whatsapp.com/channel/0029VasiOoR3bbUw5aV4qB31
 
-FOLLOW MY GIT
+> FOLLOW MY GIT
 > https://github.com/Mrhanstz`
                     }, { quoted: Hansses });
 
