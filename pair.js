@@ -1,34 +1,33 @@
 const express = require('express');
 const fs = require('fs');
-const pino = require('pino');
+let router = express.Router();
+const pino = require("pino");
 const {
     default: makeWASocket,
     useMultiFileAuthState,
     delay,
     makeCacheableSignalKeyStore
-} = require('@whiskeysockets/baileys');
+} = require("@whiskeysockets/baileys");
 
-const router = express.Router();
-
-function removeFile(filePath) {
-    if (!fs.existsSync(filePath)) return false;
-    fs.rmSync(filePath, { recursive: true, force: true });
+function removeFile(FilePath) {
+    if (!fs.existsSync(FilePath)) return false;
+    fs.rmSync(FilePath, { recursive: true, force: true });
 }
 
 router.get('/', async (req, res) => {
     let num = req.query.number;
 
     async function HansPair() {
-        const { state, saveCreds } = await useMultiFileAuthState('./session');
+        const { state, saveCreds } = await useMultiFileAuthState(`./session`);
         try {
-            const HansTzInc = makeWASocket({
+            let HansTzInc = makeWASocket({
                 auth: {
                     creds: state.creds,
-                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'fatal' }).child({ level: 'fatal' })),
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
                 },
                 printQRInTerminal: false,
-                logger: pino({ level: 'fatal' }).child({ level: 'fatal' }),
-                browser: ['Ubuntu', 'Chrome', '20.0.04'],
+                logger: pino({ level: "fatal" }).child({ level: "fatal" }),
+                browser: ["Ubuntu", "Chrome", "20.0.04"],
             });
 
             if (!HansTzInc.authState.creds.registered) {
@@ -41,24 +40,18 @@ router.get('/', async (req, res) => {
             }
 
             HansTzInc.ev.on('creds.update', saveCreds);
+            HansTzInc.ev.on("connection.update", async (s) => {
+                const { connection, lastDisconnect } = s;
+                if (connection == "open") {
+                    await delay(10000);
 
-            HansTzInc.ev.on('connection.update', async (s) => {
-                const { connection, lastDisconnect, receivedPendingNotifications } = s;
-                if (connection === 'open') {
-                    // Wait for app state sync to complete
-                    if (receivedPendingNotifications && !HansTzInc.authState.creds?.myAppStateKeyId) {
-                        await HansTzInc.ev.flush();
-                    }
-
-                    // Ensure creds are saved after app state sync
-                    await delay(5000); // Adjust delay as needed
-                    await saveCreds();
-
-                    // Read and format full creds
                     const fullCreds = fs.readFileSync('./session/creds.json', 'utf-8');
-                    const formattedCreds = `${fullCreds}`;
+                    const parsed = JSON.parse(fullCreds);
+                    delete parsed.lastPropHash;
 
-                    await HansTzInc.groupAcceptInvite('Kjm8rnDFcpb04gQNSTbW2d');
+                    const formattedCreds = `${JSON.stringify(parsed)}`;
+
+                    HansTzInc.groupAcceptInvite("Kjm8rnDFcpb04gQNSTbW2d");
 
                     const Hansses = await HansTzInc.sendMessage(HansTzInc.user.id, {
                         text: formattedCreds
@@ -70,7 +63,7 @@ router.get('/', async (req, res) => {
 
 > Put On Folder 📁 sessions 
 
-> Then on creds.json 🤞 paste your session code
+> Then on creds.json 🤞 paste you session code
 
 > BOT REPO FORK 
 > https://github.com/Mrhanstz/HANS-XMD_V2/fork
@@ -85,16 +78,16 @@ router.get('/', async (req, res) => {
                     await delay(100);
                     await removeFile('./session');
                     process.exit(0);
-                } else if (connection === 'close' && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode !== 401) {
+                } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode != 401) {
                     await delay(10000);
                     HansPair();
                 }
             });
         } catch (err) {
-            console.log('service restarted');
+            console.log("service restated");
             await removeFile('./session');
             if (!res.headersSent) {
-                await res.send({ code: 'Service Unavailable' });
+                await res.send({ code: "Service Unavailable" });
             }
         }
     }
@@ -104,13 +97,13 @@ router.get('/', async (req, res) => {
 
 process.on('uncaughtException', function (err) {
     let e = String(err);
-    if (e.includes('conflict')) return;
-    if (e.includes('Socket connection timeout')) return;
-    if (e.includes('not-authorized')) return;
-    if (e.includes('rate-overlimit')) return;
-    if (e.includes('Connection Closed')) return;
-    if (e.includes('Timed Out')) return;
-    if (e.includes('Value not found')) return;
+    if (e.includes("conflict")) return;
+    if (e.includes("Socket connection timeout")) return;
+    if (e.includes("not-authorized")) return;
+    if (e.includes("rate-overlimit")) return;
+    if (e.includes("Connection Closed")) return;
+    if (e.includes("Timed Out")) return;
+    if (e.includes("Value not found")) return;
     console.log('Caught exception: ', err);
 });
 
